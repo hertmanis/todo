@@ -7,8 +7,9 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 
 // Redirect root to todos index
 Route::get('/', function () {
-    return redirect()->route('todos.index');
+    return Auth::check() ? redirect()->route('todos.index') : redirect()->route('login');
 });
+
 
 // Resource routes for todos
 Route::resource('todos', TodoController::class);
@@ -18,7 +19,7 @@ Route::post('todos/{todo}/complete', [TodoController::class, 'complete'])->name(
 
 // Authentication routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])->middleware('guest')->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
     
     Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -26,4 +27,4 @@ Route::middleware('guest')->group(function () {
 });
 
 // Logout route
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout')->middleware('auth');
+Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->middleware('auth')->name('logout');
